@@ -121,32 +121,28 @@ class Hangman
       # give the user feedback, wrong letters, right letters etc..
       feedback
       # get user letter
-      while true
-        puts "\n\n"
-        puts "********************************************************"
-        puts "\n\n"
-        print "Hello, #{@user.capitalize}. Try a letter, write 'save' to save the game, or 'exit' to leave: "
-        @letter = gets.chomp.strip.downcase
+      puts "\n\n********************************************************\n\n"
+      print "Hello, #{@user.capitalize}. Try a letter, write 'save' to save the game, or 'exit' to leave: "
+      @letter = gets.chomp.strip.downcase
 
-        # close the game
-        if @letter == 'exit'
-          @game_status = false
-          return
-        end
-
-        # save the game
-        break unless @letter == 'save'
-
-        puts 'Game saved!'
+      case
+      when @letter == 'exit'
+        @game_status = false
+        return
+      when @letter == 'save'
+        puts "\n\nGame saved!"
         save_game(@user)
         next
+      when @tried_letters.include?(@letter)
+        puts "\n\nYou've already guessed that letter!: #{@letter}"
+        next
+      when @letter.match?(/[^a-z]/) || @letter.length > 1
+        puts "\n\nInvalid input: #{@letter}"
+        next
+      else
+        @tried_letters << @letter
+        break
       end
-
-      # check if is a letter or is has been already choosen
-      next if invalid_letter?
-
-      @tried_letters << @letter
-      break
     end
   end
 
@@ -161,9 +157,6 @@ class Hangman
     @wrong_tries += 1 if letters_changed == false
   end
 
-  def invalid_letter?
-    @tried_letters.include?(@letter) || @letter.match?(/[^a-zA-Z]/)
-  end
 
   def feedback
     puts "Tried letters: #{@tried_letters}"
